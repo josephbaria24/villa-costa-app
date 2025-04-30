@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class Note {
+  final String? title;
   final String content;
   final Color color;
   final bool isImportant;
 
   Note({
+    this.title,
     required this.content,
     required this.color,
     required this.isImportant,
@@ -14,6 +16,7 @@ class Note {
 
   Map<String, dynamic> toMap() {
     return {
+      'title': title,
       'content': content,
       'color': color.value,
       'isImportant': isImportant,
@@ -22,6 +25,7 @@ class Note {
 
   factory Note.fromMap(Map<String, dynamic> map) {
     return Note(
+      title: map['title'],
       content: map['content'],
       color: Color(map['color']),
       isImportant: map['isImportant'],
@@ -37,3 +41,4 @@ class Note {
           .map<Note>((item) => Note.fromMap(item))
           .toList();
 }
+
