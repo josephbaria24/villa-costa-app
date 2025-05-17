@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fitness_tracker/model/note_model.dart';
+import 'package:villa_costa/model/note_model.dart';
 
 class NoteStorage {
   static const String _key = 'notes';

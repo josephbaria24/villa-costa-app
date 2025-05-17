@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:fitness_tracker/components/add_note_page.dart';
+import 'package:villa_costa/components/add_note_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
@@ -21,12 +21,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Binx Note',
+      title: 'Villa Costa',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'MyFont', // <- this sets the global font
         ),
-      home: const Dashboard(),
+      home: const HotelDashboard(),
       routes: {
         '/addNote': (context) => const AddNotePage(),
       }
