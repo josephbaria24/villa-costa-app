@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'dashboard.dart'; // for HotelModel
+import 'package:villa_costa/model/room_model.dart';
+import 'dart:convert';
+
 
 class DatePreferencesPage extends StatefulWidget {
   final HotelModel hotel;
@@ -30,20 +32,76 @@ void initState() {
   _loadBookedDates();
 }
 
-
 Future<void> _loadBookedDates() async {
   final prefs = await SharedPreferences.getInstance();
-  final storedDates = prefs.getStringList('booked_dates') ?? [];
+  final bookingString = prefs.getString('booking_${widget.hotel.id}');
+
+  // Start with the booked dates from the hotel model
+  Set<DateTime> initialDates = widget.hotel.bookedDates?.toSet() ?? {};
+
+  if (bookingString != null) {
+    final parts = RegExp(r"dates: \[(.*?)\], guests: (\d+)")
+        .firstMatch(bookingString);
+
+    if (parts != null) {
+      final localDates = parts.group(1)!
+          .split(', ')
+          .map((str) => DateTime.parse(str))
+          .toSet();
+
+      final guests = int.parse(parts.group(2)!);
+
+      setState(() {
+        bookedDates = {...initialDates, ...localDates}; // Merge server + local
+        guestCount = guests;
+      });
+      return;
+    }
+  }
 
   setState(() {
-    bookedDates = storedDates.map((dateStr) => DateTime.parse(dateStr)).toSet();
+    bookedDates = initialDates;
   });
 }
 
+
+// Future<void> _saveBookedDates() async {
+//   final prefs = await SharedPreferences.getInstance();
+
+//   final updatedHotel = HotelModel(
+//     price: widget.hotel.price,
+//     id: widget.hotel.id,
+//     name: widget.hotel.name,
+//     rating: widget.hotel.rating,
+//     amenities: widget.hotel.amenities,
+//     reviewCount: widget.hotel.reviewCount,
+//     imageUrl: widget.hotel.imageUrl,
+//     location: widget.hotel.location,
+//     bookedDates: bookedDates.toList(),
+//   );
+
+//   // Load current list
+//   final current = prefs.getStringList('booked_rooms') ?? [];
+
+//   // Add this new booking
+//   current.add(jsonEncode(updatedHotel.toJson()));
+
+//   await prefs.setStringList('booked_rooms', current);
+// }
+
+
 Future<void> _saveBookedDates() async {
   final prefs = await SharedPreferences.getInstance();
-  final dateStrings = bookedDates.map((date) => date.toIso8601String()).toList();
-  await prefs.setStringList('booked_dates', dateStrings);
+
+  final List<String> dateStrings = bookedDates.map((date) => date.toIso8601String()).toList();
+
+  // Format the data in a more predictable way
+  final bookingString = '{dates: [${dateStrings.join(", ")}], guests: $guestCount, hotelName: ${widget.hotel.name}}';
+  
+  await prefs.setString('booking_${widget.hotel.id}', bookingString);
+  
+  // For debugging: show a message with what was saved
+  print('Saved booking data: $bookingString');
 }
 
 

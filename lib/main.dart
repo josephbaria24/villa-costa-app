@@ -1,12 +1,7 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:villa_costa/components/add_note_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'screens/dashboard.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,12 +19,9 @@ class MyApp extends StatelessWidget {
       title: 'Villa Costa',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'MyFont', // <- this sets the global font
-        ),
-      home: const HotelDashboard(),
-      routes: {
-        '/addNote': (context) => const AddNotePage(),
-      }
+        fontFamily: 'MyFont',
+      ),
+      home: const SplashScreen(),
     );
   }
 }

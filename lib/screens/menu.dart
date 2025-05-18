@@ -2,6 +2,7 @@
 
 // ignore_for_file: prefer_const_constructors
 
+import 'package:villa_costa/model/room_model.dart';
 import 'package:villa_costa/screens/DatePreferencesPage.dart';
 import 'package:villa_costa/screens/dashboard.dart';
 import 'package:villa_costa/screens/full_screen_image.dart';
