@@ -129,14 +129,19 @@ Widget build(BuildContext context) {
   children: [
     Row(
       children: [
-        const SizedBox(width: 10),
-        Text(
-          "Villa Costa •",
-          style: TextStyle(
-            color: _showStickySearch ? Colors.black : Colors.transparent,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
+        Row(
+          children: [
+            
+            Image.asset(_showStickySearch ? 'lib/assets/images/VC-1.png' : 'lib/assets/images/VC-2.png', width: 40,),
+            Text(
+              "  ",
+              style: TextStyle(
+                color: _showStickySearch ? const Color.fromARGB(255, 248, 0, 74) : Colors.transparent,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ],
         ),
       ],
     ),
@@ -779,7 +784,6 @@ class AppDrawer extends StatelessWidget {
   }) : super(key: key);
 
 
-
 @override
 Widget build(BuildContext context) {
   return Drawer(
@@ -787,7 +791,7 @@ Widget build(BuildContext context) {
     child: Stack(
       children: [
         // Background gradient circles (extend behind header and list tiles)
-       Positioned(
+        Positioned(
           top: -60,
           left: -60,
           child: Container(
@@ -795,7 +799,7 @@ Widget build(BuildContext context) {
             height: 300,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: Color.fromARGB(20, 228, 82, 24),
+              color: Color.fromARGB(19, 233, 4, 62),
             ),
           ),
         ),
@@ -807,7 +811,7 @@ Widget build(BuildContext context) {
             height: 210,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: Color.fromARGB(50, 228, 82, 24),
+              color: Color.fromARGB(50, 233, 4, 62),
             ),
           ),
         ),
@@ -819,144 +823,166 @@ Widget build(BuildContext context) {
             height: 400,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: Color.fromARGB(20, 228, 82, 24),
+              color: Color.fromARGB(20, 233, 4, 62),
             ),
           ),
         ),
 
-        // Foreground content
-        ListView(
-          padding: EdgeInsets.zero,
+        // Foreground content with copyright at bottom
+        Column(
           children: [
-            SizedBox(
-              height: 160,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: AssetImage('lib/assets/icons/vcicon.png'),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'CHTM',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  SizedBox(
+                    height: 160,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+                      child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundImage: AssetImage('lib/assets/images/VC-1.png'),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'User',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const Text(
+                              'user@example.com',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const Text(
-                        'user@example.com',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 14,
-                        ),
+                    ),
+                  ),
+
+                  const SizedBox(height:10),
+
+                  ListTile(
+                    leading: SvgPicture.asset("lib/assets/icons/bedd.svg", height: 25,),
+                    title: Text('My Booked Rooms', style: TextStyle(
+                      fontWeight: FontWeight.w600
+                    ),),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Future.delayed(const Duration(milliseconds: 1), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MyBookedRoomsPage()),
+                        );
+                      });
+                    },
+                  ),
+                  ListTile(
+                      leading:  SvgPicture.asset("lib/assets/icons/promo.svg", height: 25,),
+                      title: Text(
+                        'Promos and Offers',
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
-                    ],
+                      onTap: () {
+                        Navigator.of(context).pop(); // Close the drawer
+                        Future.delayed(const Duration(milliseconds: 1), () {
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const PromosAndOffersScreen()),
+                        );
+                        });
+                      },
+                    ),
+                  ListTile(
+                      leading: SvgPicture.asset("lib/assets/icons/rate.svg", height: 25,),
+                      title: Text(
+                        'Rate Our Service',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop(); // Close the drawer
+                        Future.delayed(const Duration(milliseconds: 1), () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => RateServiceDialog(),
+                          );
+                        });
+                      },
+                    ),
+                    ListTile(
+                    leading: SvgPicture.asset("lib/assets/icons/phone.svg", height: 25,),
+                    title: const Text('Contact us', style: TextStyle(
+                      fontWeight: FontWeight.w600
+                    ),),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Future.delayed(const Duration(milliseconds: 1), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Contactuspage()),
+                        );
+                      });
+                    },
+                  ),
+                  ListTile(
+                    leading: SvgPicture.asset("lib/assets/icons/about.svg", height: 25,),
+                    title: const Text('About us', style: TextStyle(
+                      fontWeight: FontWeight.w600
+                    ),),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Future.delayed(const Duration(milliseconds: 1), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const AboutUsPage()),
+                        );
+                      });
+                    },
+                  ),
+                  
+                  ListTile(
+                    leading: SvgPicture.asset("lib/assets/icons/logout.svg", height: 25,),
+                    title: const Text('Sign Out', style: TextStyle(
+                      fontWeight: FontWeight.w600
+                    ),),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Future.delayed(const Duration(milliseconds: 1), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const AuthPage()),
+                        );
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            
+            // Copyright text at the very bottom
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  '© ${DateTime.now().year} Villa Costa. All rights reserved',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
-            ),
-
-            SizedBox(height:10,),
-
-            ListTile(
-              leading: SvgPicture.asset("lib/assets/icons/bedd.svg", height: 25,),
-              title: Text('My Booked Rooms', style: TextStyle(
-                fontWeight: FontWeight.w600
-              ),),
-              onTap: () {
-                Navigator.of(context).pop();
-                Future.delayed(const Duration(milliseconds: 1), () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyBookedRoomsPage()),
-                  );
-                });
-              },
-            ),
-            ListTile(
-                leading:  SvgPicture.asset("lib/assets/icons/promo.svg", height: 25,),
-                title: Text(
-                  'Promos and Offers',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop(); // Close the drawer
-                  Future.delayed(const Duration(milliseconds: 1), () {
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const PromosAndOffersScreen()),
-                  );
-                  });
-                },
-              ),
-            ListTile(
-                leading: SvgPicture.asset("lib/assets/icons/rate.svg", height: 25,),
-                title: Text(
-                  'Rate Our Service',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop(); // Close the drawer
-                  Future.delayed(const Duration(milliseconds: 1), () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => RateServiceDialog(),
-                    );
-                  });
-                },
-              ),
-              ListTile(
-              leading: SvgPicture.asset("lib/assets/icons/phone.svg", height: 25,),
-              title: const Text('Contact us', style: TextStyle(
-                fontWeight: FontWeight.w600
-              ),),
-              onTap: () {
-                Navigator.of(context).pop();
-                Future.delayed(const Duration(milliseconds: 1), () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Contactuspage()),
-                  );
-                });
-              },
-            ),
-            ListTile(
-              leading: SvgPicture.asset("lib/assets/icons/about.svg", height: 25,),
-              title: const Text('About us', style: TextStyle(
-                fontWeight: FontWeight.w600
-              ),),
-              onTap: () {
-                Navigator.of(context).pop();
-                Future.delayed(const Duration(milliseconds: 1), () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AboutUsPage()),
-                  );
-                });
-              },
-            ),
-            
-            ListTile(
-              leading: SvgPicture.asset("lib/assets/icons/logout.svg", height: 25,),
-              title: const Text('Sign Out', style: TextStyle(
-                fontWeight: FontWeight.w600
-              ),),
-              onTap: () {
-                Navigator.of(context).pop();
-                Future.delayed(const Duration(milliseconds: 1), () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AuthPage()),
-                  );
-                });
-              },
             ),
           ],
         ),

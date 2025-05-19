@@ -61,13 +61,14 @@ Widget build(BuildContext context) {
                   children: [
                     const SizedBox(height: 10),
                     Center(
-                      child: Lottie.asset(
-                        "lib/assets/icons/loginLogo.json",
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+  child: Image.asset(
+    'lib/assets/images/VC-1.png',
+    width: 200, // set desired width
+    height: 200, // set desired height
+    fit: BoxFit.contain, // or cover, fill, etc.
+  ),
+),
+
                     Center(
                       child: const Text(
                         "Welcome to Villa Costa",

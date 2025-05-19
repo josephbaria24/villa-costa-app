@@ -36,7 +36,7 @@ class _ContactuspageState extends State<Contactuspage> {
         width: 150,
         height: 150,
         decoration: BoxDecoration(
-          color: Color(0xFFD2B48C).withOpacity(0.3), // pastel brown
+          color: Color.fromARGB(255, 255, 90, 131).withOpacity(0.3), // pastel brown
           shape: BoxShape.circle,
         ),
       ),
