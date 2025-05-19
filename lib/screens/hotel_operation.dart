@@ -9,6 +9,8 @@ import 'package:villa_costa/screens/dashboard.dart';
 import 'package:villa_costa/screens/login_signup_page.dart';
 import 'dart:math';
 
+import 'package:villa_costa/screens/ratings_page.dart';
+
 final random = Random();
 final guestNames = [
   'Alice Guevarra', 'Bob Smith', 'Charlie Johnsons', 'Diana Lee', 'Ethan Martins', 'Fiona Arin',
@@ -53,6 +55,19 @@ class _HotelOperationState extends State<HotelOperation> {
   void initState() {
     super.initState();
     _loadBookings();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    final dates = _generateMonthDates(_selectedMonth);
+    final index = _getFirstBookedDateIndex(dates);
+    if (index != null) {
+      // Assume each date cell is 80 pixels wide
+      final targetOffset = index * 80.0;
+      _horizontalScrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
+    }
+  });
   }
 
 Future<void> _loadBookings() async {
@@ -60,7 +75,22 @@ Future<void> _loadBookings() async {
   setState(() {
     roomBookedDates = result;
   });
+
+  // Wait for UI to update after setState
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final dates = _generateMonthDates(_selectedMonth);
+    final index = _getFirstBookedDateIndex(dates);
+    if (index != null) {
+      final targetOffset = index * 80.0;
+      _horizontalScrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
+    }
+  });
 }
+
 
 Future<Map<String, RoomBookingInfo>> loadAllBookedDates(List<HotelModel> hotels) async {
   final prefs = await SharedPreferences.getInstance();
@@ -104,6 +134,25 @@ bool isDateBooked(String hotelId, DateTime date) {
   final info = roomBookedDates[hotelId];
   return info?.dates.any((d) => DateUtils.isSameDay(d, date)) ?? false;
 }
+
+final ScrollController _horizontalScrollController = ScrollController();
+
+
+int? _getFirstBookedDateIndex(List<DateTime> dates) {
+  for (int i = 0; i < dates.length; i++) {
+    final date = dates[i];
+    for (var hotel in hotels) {
+      if (isDateBooked(hotel.id, date)) {
+        return i;
+      }
+    }
+  }
+  return null;
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final dates = _generateMonthDates(_selectedMonth);
@@ -115,10 +164,22 @@ bool isDateBooked(String hotelId, DateTime date) {
           child: DropdownButton<DateTime>(
             value: _selectedMonth,
             onChanged: (newDate) {
-              if (newDate != null) {
-                setState(() => _selectedMonth = newDate);
-              }
-            },
+  if (newDate != null) {
+    setState(() => _selectedMonth = newDate);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final dates = _generateMonthDates(newDate);
+      final index = _getFirstBookedDateIndex(dates);
+      if (index != null) {
+        final targetOffset = index * 80.0;
+        _horizontalScrollController.animateTo(
+          targetOffset,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+},
             items: List.generate(12, (index) {
               final date = DateTime(_selectedMonth.year, index + 1);
               return DropdownMenuItem(
@@ -198,6 +259,7 @@ bool isDateBooked(String hotelId, DateTime date) {
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      controller: _horizontalScrollController, // Add this line
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -260,6 +322,8 @@ bool isDateBooked(String hotelId, DateTime date) {
       ),
     );
   }
+
+
  Drawer _buildAppDrawer(BuildContext context) {
   return Drawer(
     backgroundColor: Colors.white,
@@ -338,23 +402,16 @@ bool isDateBooked(String hotelId, DateTime date) {
                 ),
               ),
             ),
-
-            // List tiles
-            // ListTile(
-            //   leading: Icon(Icons.dashboard),
-            //   title: Text('Dashboard'),
-            //   onTap: () {
-            //     Navigator.push(
-            //         context, MaterialPageRoute(builder: (_) => HotelDashboard()));
-            //   },
-            // ),
-            // ListTile(
-            //   leading: Icon(Icons.hotel),
-            //   title: Text('Hotel Operation'),
-            //   onTap: () {
-            //     Navigator.pop(context);
-            //   },
-            // ),
+            ListTile(
+              leading: Icon(Icons.dashboard),
+              title: Text('View Ratings', style: TextStyle(
+                fontWeight: FontWeight.bold
+              ), ),
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => RatingsScreen()));
+              },
+            ),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout', style: TextStyle(

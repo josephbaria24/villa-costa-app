@@ -3,6 +3,7 @@
 import 'package:villa_costa/model/facilities_model.dart';
 import 'package:villa_costa/model/room_model.dart';
 import 'package:villa_costa/screens/AboutUs.dart';
+import 'package:villa_costa/screens/ContactUsPage.dart';
 import 'package:villa_costa/screens/MyBookedRoomsPage.dart';
 import 'package:villa_costa/screens/facilities_card.dart';
 import 'package:villa_costa/screens/login_signup_page.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:villa_costa/data/room_data.dart';
+import 'package:villa_costa/screens/promos_offer_page.dart';
 
 class HotelDashboard extends ConsumerStatefulWidget {
   const HotelDashboard({Key? key}) : super(key: key);
@@ -25,7 +27,7 @@ class _HotelDashboardState extends ConsumerState<HotelDashboard> {
 
 bool _showMessageInput = false;
 final TextEditingController _messageController = TextEditingController();
-final selectedFilterProvider = StateProvider<String>((ref) => 'Accommodation');
+final selectedFilterProvider = StateProvider<String>((ref) => 'Accommodations');
 
 ScrollController _scrollController = ScrollController();
 bool _showStickySearch = false;
@@ -122,81 +124,84 @@ Widget build(BuildContext context) {
               backgroundColor: const Color.fromARGB(252, 255, 255, 255),
               elevation: 0,
               automaticallyImplyLeading: false,
-              title: _showStickySearch
-      ? Row(
+              title: Stack(
+  alignment: Alignment.center,
+  children: [
+    Row(
+      children: [
+        const SizedBox(width: 10),
+        Text(
+          "Villa Costa •",
+          style: TextStyle(
+            color: _showStickySearch ? Colors.black : Colors.transparent,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+      ],
+    ),
+    Padding(
+      padding: const EdgeInsets.only(left: 50.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(176, 221, 220, 220),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            
-            const SizedBox(width: 10),
+            SvgPicture.asset(
+              'lib/assets/icons/sun.svg',
+              width: 20,
+              color: Colors.black,
+            ),
+            const SizedBox(width: 5),
             const Text(
-              "Villa Costa •",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
+              'Good day!',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
           ],
-        )
-      : null,
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 65.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(176, 221, 220, 220),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-                      child: Row(
-                        children: [
-                          SvgPicture.asset('lib/assets/icons/sun.svg', width: 20,),
-                          SizedBox(width: 5,),
-                          Text(
-                            'Good day!', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                
-                IconButton(
-                  icon: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(0, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.transparent, // Or use a background color if needed
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2), // Shadow color
-                              spreadRadius: 0.1,
-                              blurRadius: 6,
-                              offset: Offset(1, 1), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(1.0),
-                          child: SvgPicture.asset(
-                            'lib/assets/icons/menu1.svg',
-                            width: 25,
-                            height: 25,
-                            color: _showStickySearch ? Colors.black : const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        ),
-                      ),
+        ),
+      ),
+    ),
+  ],
+),
 
-                  ),
-                  onPressed: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
-                ),
+actions: [
+  IconButton(
+    icon: Container(
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(1.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(176, 221, 220, 220),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: SvgPicture.asset(
+              'lib/assets/icons/filter.svg',
+              width: 20,
+              height: 20,
+              color: _showStickySearch
+                  ? Colors.black
+                  : const Color.fromARGB(255, 0, 0, 0),
+            ),
+          ),
+        ),
+      ),
+    ),
+    onPressed: () {
+      _scaffoldKey.currentState?.openDrawer();
+    },
+  ),
+],
 
-              ],
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   fit: StackFit.expand,
@@ -231,6 +236,7 @@ Widget build(BuildContext context) {
                         child: Row(
                           children: [
                             SvgPicture.asset('lib/assets/icons/searchicon.svg', width: 20,),
+                 
                             SizedBox(width: 10),
                             Expanded(
                             child: TextField(
@@ -268,7 +274,7 @@ Widget build(BuildContext context) {
                   height: 48,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    children: ['Accommodation', 'Facilities', 'Amenities'].map((filter) {
+                    children: ['Accommodations', 'Facilities', 'Amenities'].map((filter) {
                       final isSelected = selectedFilter == filter;
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
@@ -309,7 +315,7 @@ Widget build(BuildContext context) {
             ),
 
             // Content based on selected filter
-           if (selectedFilter == 'Accommodation') ...[
+           if (selectedFilter == 'Accommodations') ...[
 
   // Common Rooms (0-3)
   SliverToBoxAdapter(
@@ -857,15 +863,12 @@ Widget build(BuildContext context) {
               ),
             ),
 
-            const Divider(
-              color: Color.fromARGB(99, 228, 106, 24),
-              thickness: 1.0,
-            ),
+            SizedBox(height:10,),
 
             ListTile(
-              leading: Icon(Icons.bedroom_child_outlined),
+              leading: SvgPicture.asset("lib/assets/icons/bedd.svg", height: 25,),
               title: Text('My Booked Rooms', style: TextStyle(
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.w600
               ),),
               onTap: () {
                 Navigator.of(context).pop();
@@ -878,10 +881,26 @@ Widget build(BuildContext context) {
               },
             ),
             ListTile(
-                leading: Icon(Icons.star),
+                leading:  SvgPicture.asset("lib/assets/icons/promo.svg", height: 25,),
+                title: Text(
+                  'Promos and Offers',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the drawer
+                  Future.delayed(const Duration(milliseconds: 1), () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const PromosAndOffersScreen()),
+                  );
+                  });
+                },
+              ),
+            ListTile(
+                leading: SvgPicture.asset("lib/assets/icons/rate.svg", height: 25,),
                 title: Text(
                   'Rate Our Service',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 onTap: () {
                   Navigator.of(context).pop(); // Close the drawer
@@ -893,11 +912,25 @@ Widget build(BuildContext context) {
                   });
                 },
               ),
-
+              ListTile(
+              leading: SvgPicture.asset("lib/assets/icons/phone.svg", height: 25,),
+              title: const Text('Contact us', style: TextStyle(
+                fontWeight: FontWeight.w600
+              ),),
+              onTap: () {
+                Navigator.of(context).pop();
+                Future.delayed(const Duration(milliseconds: 1), () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Contactuspage()),
+                  );
+                });
+              },
+            ),
             ListTile(
-              leading: const Icon(Icons.info_outline_rounded),
+              leading: SvgPicture.asset("lib/assets/icons/about.svg", height: 25,),
               title: const Text('About us', style: TextStyle(
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.w600
               ),),
               onTap: () {
                 Navigator.of(context).pop();
@@ -909,10 +942,11 @@ Widget build(BuildContext context) {
                 });
               },
             ),
+            
             ListTile(
-              leading: const Icon(Icons.logout_outlined),
+              leading: SvgPicture.asset("lib/assets/icons/logout.svg", height: 25,),
               title: const Text('Sign Out', style: TextStyle(
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.w600
               ),),
               onTap: () {
                 Navigator.of(context).pop();

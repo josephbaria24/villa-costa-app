@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
@@ -6,8 +9,9 @@ class AboutUsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_outlined, size: 18),
           onPressed: () {
@@ -19,7 +23,7 @@ class AboutUsPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           'About Us',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
 
@@ -28,20 +32,29 @@ class AboutUsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Banner image
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(14)),
-              child: Image.asset(
-                'lib/assets/images/bgh.jpg',
-                height: 220,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
+            
             const Padding(
               padding: EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10.0),
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Learn more", style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 35,
+                      ),),
+                      Text("About us!", style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 33,
+                                    ),),
+                    ],
+                                    ),
+                  ),
+                SizedBox(height: 20,),
                   Text(
                     'Welcome to your dream home away from home',
                     style: TextStyle(
@@ -50,7 +63,7 @@ class AboutUsPage extends StatelessWidget {
                       height: 1.4,
                       color: Colors.black87,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.justify,
                   ),
                   SizedBox(height: 16),
                   Text(
@@ -61,166 +74,24 @@ class AboutUsPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       height: 1.6,
-                      color: Colors.black87,
+                      color: Color.fromARGB(255, 116, 116, 116),
                     ),
                     textAlign: TextAlign.justify,
                   ),
+                  
                 ],
               ),
             ),
-            SizedBox(height: 30,),
-            Center(
-              child: Text("Contact Us", style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-              ),
-              textAlign: TextAlign.center,),
-            ),
+             SizedBox(height: 30,),
+            
             // Contact Information Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Villa Costa',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  const Text(
-                    'Reservations Office',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  
-                  const Text(
-                    'Mercado De San Miguel, Puerto.\nPrinceton City, Palomar, 5200',
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.5,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  const Text(
-                    '12-3-456-7890',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  const Text(
-                    'hello@costovilla.com',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  const Divider(height: 1, thickness: 1),
-                  
-                  const SizedBox(height: 24),
-                  
-                  const Text(
-                    'Office Hours',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  const Text(
-                    'Monday to Friday\n9:00 am to 8:00 pm',
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.5,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  const Text(
-                    'Saturday\n9:00 am to 12:00 noon',
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.5,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  const Divider(height: 1, thickness: 1),
-                  
-                  const SizedBox(height: 24),
-                  
-                  const Text(
-                    'Get Social',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  const Text(
-                    'Tag us in your photos!',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // Social media icons would go here
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.facebook, size: 30, color: Colors.black,),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        icon: Image.asset('lib/assets/icons/ig.png', width: 27),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        icon: Image.asset('lib/assets/icons/x.png', width: 27),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 40),
-                ],
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
+              child: Image.asset(
+                'lib/assets/images/bgh.jpg',
+                height: 220,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
           ],

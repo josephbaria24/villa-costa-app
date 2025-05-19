@@ -54,6 +54,7 @@ dependencies:
   table_calendar: ^3.0.9
   flutter_native_splash: ^2.4.4
   flutter_rating_bar: ^4.0.1
+  video_player: ^2.9.5
 
 dev_dependencies:
   flutter_test:
@@ -117,13 +118,13 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-flutter_native_splash:
-  color: "#ffffff" # Background color
-  image: lib/assets/icons/avatar2.png # Your logo or splash image
-  branding: lib/assets/icons/avatar2.png # Optional secondary image
-  android_gravity: center
-  ios_content_mode: center
+# flutter_native_splash:
+#   color: "#ffffff" # Background color
+#   image: lib/assets/icons/lgo.png # Your logo or splash image
+#   branding: lib/assets/icons/lgo.png # Optional secondary image
+#   android_gravity: center
+#   ios_content_mode: center
 
-  android_12:
-    color: "#ffffff"
-    image: lib/assets/icons/avatar2.png
+#   android_12:
+#     color: "#ffffff"
+#     image: lib/assets/icons/lgo.png

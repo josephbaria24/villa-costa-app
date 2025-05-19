@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:villa_costa/screens/intro_page.dart';
 import 'dart:async';
 import 'login_signup_page.dart';
 
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const AuthPage()),
+        MaterialPageRoute(builder: (context) => IntroScreen()),
       );
     });
   }

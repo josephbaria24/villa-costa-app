@@ -1,3 +1,13 @@
+buildscript {
+    dependencies {
+        // existing dependencies
+    }
+}
+
+allprojects {
+    // existing allprojects block
+}
+
 allprojects {
     repositories {
         google()
