@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:villa_costa/model/facilities_model.dart';
 import 'package:villa_costa/model/room_model.dart';
 import 'package:villa_costa/screens/AboutUs.dart';
@@ -34,6 +35,7 @@ bool _showStickySearch = false;
 @override
 void initState() {
   super.initState();
+  _loadUserMessages();
   _scrollController.addListener(() {
   if (_scrollController.offset > 100 && !_showStickySearch) {
     setState(() {
@@ -48,6 +50,53 @@ void initState() {
 
 }
 
+
+
+void _loadUserMessages() async {
+  final prefs = await SharedPreferences.getInstance();
+  final savedMessages = prefs.getStringList('userMessages') ?? [];
+  setState(() {
+    _userMessages = savedMessages;
+  });
+}
+
+void _deleteUserMessages() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('userMessages');
+  setState(() {
+    _userMessages.clear();
+  });
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Your messages have been deleted.'),
+      duration: Duration(seconds: 2),
+    ),
+  );
+}
+void _sendMessage() async {
+  final message = _messageController.text.trim();
+  if (message.isNotEmpty) {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userMessages.add(message);
+      _messageController.clear();
+    });
+    prefs.setStringList('userMessages', _userMessages);
+
+    // Optional: scroll to bottom after a short delay
+    Future.delayed(Duration(milliseconds: 100), () {
+      _scrollController2.animateTo(
+        _scrollController2.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+}
+
+List<String> _userMessages = [];
+final ScrollController _scrollController2 = ScrollController();
 
 
 final List<String> amenities = [
@@ -488,20 +537,21 @@ SliverToBoxAdapter(
           ],
         ),
 
-        // Floating message input at bottom
-        AnimatedPositioned(
+ // Dummy floating chatbox at the bottom
+AnimatedPositioned(
   duration: const Duration(milliseconds: 300),
   curve: Curves.easeInOut,
-  bottom: _showMessageInput ? 20 : -200, // Animate in/out
+  bottom: _showMessageInput ? 80 : -400,
   left: 20,
-  right: 80,
+  right: 20,
   child: AnimatedOpacity(
     duration: const Duration(milliseconds: 300),
     opacity: _showMessageInput ? 1.0 : 0.0,
     child: IgnorePointer(
-      ignoring: !_showMessageInput, // Prevents interaction when invisible
+      ignoring: !_showMessageInput,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        height: 350,
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -513,44 +563,107 @@ SliverToBoxAdapter(
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Column(
           children: [
-            Expanded(
-              child: TextField(
-                controller: _messageController,
-                maxLines: 5,
-                minLines: 1,
-                decoration: const InputDecoration(
-                  hintText: 'Type your message...',
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.send, color: Colors.black),
-              onPressed: () {
-                final message = _messageController.text.trim();
-                if (message.isNotEmpty) {
-                  print('Sending message: $message');
-                  _messageController.clear();
-                  setState(() {
-                    _showMessageInput = false;
-                  });
+            // Header with recipient name
+            Row(
+  children: [
+    const CircleAvatar(
+      radius: 16,
+      backgroundColor: Colors.black,
+      child: Icon(Icons.admin_panel_settings, color: Colors.white, size: 16),
+    ),
+    const SizedBox(width: 10),
+    const Text(
+      "Admin",
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+    ),
+    Spacer(),
+    PopupMenuButton<String>(
+      onSelected: (value) {
+        if (value == 'delete') {
+          _deleteUserMessages();
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem<String>(
+          value: 'delete',
+          child: Text('Delete My Messages'),
+        ),
+      ],
+    ),
+    IconButton(
+      icon: const Icon(Icons.close),
+      onPressed: () {
+        setState(() {
+          _showMessageInput = false;
+        });
+      },
+    ),
+  ],
+),
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Message sent!'),
-                      duration: Duration(seconds: 2),
-                      behavior: SnackBarBehavior.floating,
-                      margin: EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+
+            const SizedBox(height: 8),
+
+            // Chat messages (dummy messages for now)
+            Expanded(
+  child: ListView(
+    controller: _scrollController2,
+    children: [
+      _chatBubble("Hello! 👋", isAdmin: true),
+      _chatBubble("I'm the admin. How can I help you today?", isAdmin: true),
+      _chatBubble("Feel free to ask any questions.", isAdmin: true),
+      ..._userMessages.map((msg) => _chatBubble(msg, isAdmin: false)),
+    ],
+  ),
+),
+
+
+            // Message input
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      maxLines: 5,
+                      minLines: 1,
+                      decoration: const InputDecoration(
+                        hintText: 'Type your message...',
+                        border: InputBorder.none,
                       ),
                     ),
-                  );
-                }
-              },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.send, color: Colors.black),
+                    onPressed: () {
+                      _sendMessage();
+                      //final message = _messageController.text.trim();
+                      // if (message.isNotEmpty) {
+                      //   print('Sending message: $message');
+                      //   _messageController.clear();
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     SnackBar(
+                      //       content: Text('Message sent!'),
+                      //       duration: Duration(seconds: 2),
+                      //       behavior: SnackBarBehavior.floating,
+                      //       margin: EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(12),
+                      //       ),
+                      //     ),
+                      //   );
+                      // }
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -560,11 +673,29 @@ SliverToBoxAdapter(
 ),
 
 
+
       ],
     ),
   );
 }
                 }
+Widget _chatBubble(String message, {bool isAdmin = false}) {
+  return Align(
+    alignment: isAdmin ? Alignment.centerLeft : Alignment.centerRight,
+    child: Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isAdmin ? Colors.grey[200] : Colors.blue[100],
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        message,
+        style: const TextStyle(color: Colors.black87),
+      ),
+    ),
+  );
+}
 
 
 /// 🔧 Sticky Search Bar Delegate

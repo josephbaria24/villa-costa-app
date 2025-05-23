@@ -10,6 +10,7 @@ import 'package:villa_costa/screens/login_signup_page.dart';
 import 'dart:math';
 
 import 'package:villa_costa/screens/ratings_page.dart';
+import 'package:villa_costa/screens/walkIn_page.dart';
 
 final random = Random();
 final guestNames = [
@@ -44,6 +45,51 @@ class RoomBookingInfo {
 
   RoomBookingInfo({required this.dates, required this.guestCount});
 }
+
+
+
+
+final DateTime today = DateTime.now();
+// Define a constant dummy booking range
+final DateTime dummyCheckIn = DateTime.now();
+final DateTime dummyCheckOut = dummyCheckIn.add(const Duration(days: 2));
+const String dummyRoomId = '1';
+const String dummyGuestName = 'Dummy Booker';
+
+
+class Booking {
+  final String name;
+  final int guestCount;
+  final String contactNumber;
+  final String time;
+
+  Booking({
+    required this.name,
+    required this.guestCount,
+    required this.contactNumber,
+    required this.time,
+  });
+}
+
+// Replace this with your actual data source in a real app
+final Map<String, Map<DateTime, Booking>> bookings = {
+  'room1': {
+    DateTime(2025, 5, 21): Booking(
+      name: 'John Doe',
+      guestCount: 2,
+      contactNumber: '09171234567',
+      time: '2:00 PM',
+    ),
+  },
+  'room2': {
+    DateTime(2025, 5, 22): Booking(
+      name: 'Jane Smith',
+      guestCount: 3,
+      contactNumber: '09981234567',
+      time: '4:30 PM',
+    ),
+  },
+};
 
 
 class _HotelOperationState extends State<HotelOperation> {
@@ -131,9 +177,24 @@ Future<Map<String, RoomBookingInfo>> loadAllBookedDates(List<HotelModel> hotels)
   }
 
 bool isDateBooked(String hotelId, DateTime date) {
+  final dateOnly = DateTime(date.year, date.month, date.day);
+
+  // Dummy booking: today to 2 days later for room with ID '1'
+  final DateTime dummyCheckIn = DateTime.now();
+  final DateTime dummyCheckOut = dummyCheckIn.add(const Duration(days: 2));
+  const String dummyRoomId = 'room2';
+
+  if (hotelId == dummyRoomId &&
+      (DateUtils.isSameDay(dateOnly, dummyCheckIn) ||
+       (dateOnly.isAfter(dummyCheckIn) && dateOnly.isBefore(dummyCheckOut)))) {
+    return true;
+  }
+
+  // Original logic for actual bookings
   final info = roomBookedDates[hotelId];
-  return info?.dates.any((d) => DateUtils.isSameDay(d, date)) ?? false;
+  return info?.dates.any((d) => DateUtils.isSameDay(d, dateOnly)) ?? false;
 }
+
 
 final ScrollController _horizontalScrollController = ScrollController();
 
@@ -164,22 +225,22 @@ int? _getFirstBookedDateIndex(List<DateTime> dates) {
           child: DropdownButton<DateTime>(
             value: _selectedMonth,
             onChanged: (newDate) {
-  if (newDate != null) {
-    setState(() => _selectedMonth = newDate);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final dates = _generateMonthDates(newDate);
-      final index = _getFirstBookedDateIndex(dates);
-      if (index != null) {
-        final targetOffset = index * 80.0;
-        _horizontalScrollController.animateTo(
-          targetOffset,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
-},
+            if (newDate != null) {
+              setState(() => _selectedMonth = newDate);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final dates = _generateMonthDates(newDate);
+                final index = _getFirstBookedDateIndex(dates);
+                if (index != null) {
+                  final targetOffset = index * 80.0;
+                  _horizontalScrollController.animateTo(
+                    targetOffset,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeOut,
+                  );
+                }
+              });
+            }
+          },
             items: List.generate(12, (index) {
               final date = DateTime(_selectedMonth.year, index + 1);
               return DropdownMenuItem(
@@ -237,10 +298,10 @@ int? _getFirstBookedDateIndex(List<DateTime> dates) {
                                   Icon(Icons.bed_outlined, size: 15),
                                   Icon(Icons.person, size: 14),
                                   SizedBox(width: 2),
-                                  Text(
-                                    '${roomBookedDates[room.id]?.guestCount ?? 0}',
-                                    style: TextStyle(fontSize: 11),
-                                  ),
+                                  // Text(
+                                  //   '${roomBookedDates[room.id]?.guestCount ?? 0}',
+                                  //   style: TextStyle(fontSize: 11),
+                                  // ),
                                 ],
                               ),
 
@@ -282,34 +343,163 @@ int? _getFirstBookedDateIndex(List<DateTime> dates) {
                             }).toList(),
                           ),
                           ...rooms.map((room) {
-                            return Row(
-                              children: dates.map((date) {
-                                final booked = isDateBooked(room.id, date);
-                                final name = guestNames[random.nextInt(guestNames.length)];
-                                final color = pastelColors[random.nextInt(pastelColors.length)];
+  List<Widget> cells = [];
+  int dateIndex = 0;
 
-                                return Container(
-                                  width: 78,
-                                  height: 68,
-                                  margin: const EdgeInsets.all(1),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: booked ? color : Colors.green,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    booked ? name : 'Available',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                );
-                              }).toList(),
-                            );
-                          }),
+  while (dateIndex < dates.length) {
+    final date = dates[dateIndex];
+    bool booked = isDateBooked(room.id, date);
+
+    // Dummy booking config
+    final String dummyRoomId = '1';
+    final DateTime dummyCheckIn = DateTime.now();
+    final DateTime dummyCheckOut = dummyCheckIn.add(const Duration(days: 2));
+    const String dummyName = 'Dummy Booker';
+
+    final isDummyBooking = !booked &&
+        room.id == dummyRoomId &&
+        (date.isAtSameMomentAs(dummyCheckIn) ||
+         (date.isAfter(dummyCheckIn) && date.isBefore(dummyCheckOut)));
+
+    if (booked || isDummyBooking) {
+      // Find the booking end range
+      int span = 1;
+      DateTime startDate = date;
+
+      while (
+        dateIndex + span < dates.length &&
+        (isDateBooked(room.id, dates[dateIndex + span]) ||
+         (isDummyBooking &&
+          room.id == dummyRoomId &&
+          dates[dateIndex + span].isBefore(dummyCheckOut)))
+      ) {
+        span++;
+      }
+
+      // Generate consistent guest name and info
+      final guestName = isDummyBooking ? dummyName : guestNames[random.nextInt(guestNames.length)];
+      final guestColor = isDummyBooking
+          ? Colors.purple.withOpacity(0.7)
+          : pastelColors[random.nextInt(pastelColors.length)];
+
+      final guestCount = random.nextInt(3) + 1;
+      final arrivalTime = TimeOfDay(hour: 12 + random.nextInt(6), minute: random.nextInt(60));
+      final endOfStayTime = TimeOfDay(hour: (arrivalTime.hour + 3) % 24, minute: arrivalTime.minute);
+      final paymentStatuses = ['Paid', 'Partially Paid', 'Unpaid'];
+      final paymentStatus = paymentStatuses[random.nextInt(paymentStatuses.length)];
+
+      cells.add(GestureDetector(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+  title: const Text(
+    'Booking Info',
+    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+  ),
+  content: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(children: [const Icon(Icons.person, size: 20), const SizedBox(width: 8), Expanded(child: Text('Name: $guestName'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.location_pin, size: 20), const SizedBox(width: 8), Expanded(child: Text('Address: Dacanay Road, Bgy. San Manuel, PPC'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.phone, size: 20), const SizedBox(width: 8), Expanded(child: Text('Phone: 09${random.nextInt(1000000000).toString().padLeft(9, '0')}'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.email, size: 20), const SizedBox(width: 8), Expanded(child: Text('Address: sampleUser@gmail.com'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.login, size: 20), const SizedBox(width: 8), Expanded(child: Text('Check-in: May 26, 2025'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.logout, size: 20), const SizedBox(width: 8), Expanded(child: Text('Check-out: May 28, 2025'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.info, size: 20), const SizedBox(width: 8), Expanded(child: Text('Additional info: N/A'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.group, size: 20), const SizedBox(width: 8), Expanded(child: Text('Guests: 3 Adults, 3 Children'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.nights_stay, size: 20), const SizedBox(width: 8), Expanded(child: Text('Nights: 3'))]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.price_change_outlined, size: 20), const SizedBox(width: 8), Expanded(child: Text('Total: ₱20,100'))]),
+      const SizedBox(height: 8),
+      Row(children: [
+        Icon(
+          Icons.payment,
+          size: 20,
+          color: paymentStatus == 'Paid'
+              ? Colors.green
+              : paymentStatus == 'Partially Paid'
+                  ? Colors.orange
+                  : Colors.red,
+        ),
+        const SizedBox(width: 8),
+        Expanded(child: Text('Payment: $paymentStatus')),
+      ]),
+      const SizedBox(height: 8),
+      Row(children: [const Icon(Icons.monetization_on, size: 20), const SizedBox(width: 8), Expanded(child: Text('Remaining balance: ₱10,100'))]),
+    ],
+  ),
+  actions: [
+    TextButton(
+      onPressed: () => Navigator.pop(context),
+      child: const Text('Close'),
+    ),
+  ],
+),
+
+          );
+        },
+        child: Container(
+          width: 78.0 * span + (span > 1 ? 5 : 0),
+
+          height: 68, 
+          margin: const EdgeInsets.all(1),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: guestColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            guestName,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ));
+
+      dateIndex += span; // skip spanned dates
+    } else {
+      cells.add(Container(
+        width: 78,
+        height: 68,
+        margin: const EdgeInsets.all(1),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(216, 88, 206, 123),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: const Text(
+          'Available',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ));
+
+      dateIndex += 1;
+    }
+  }
+
+  return Row(children: cells);
+}).toList()
+
+
                         ],
                       ),
                     ),
@@ -401,6 +591,16 @@ int? _getFirstBookedDateIndex(List<DateTime> dates) {
                   ],
                 ),
               ),
+            ),
+            ListTile(
+              leading: Icon(Icons.directions_walk_outlined),
+              title: Text('Walk in guests', style: TextStyle(
+                fontWeight: FontWeight.bold
+              ), ),
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => WalkinPage()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.dashboard),
