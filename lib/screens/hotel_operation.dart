@@ -48,6 +48,7 @@ class RoomBookingInfo {
 
 
 
+bool _showDummyBooking = true;
 
 final DateTime today = DateTime.now();
 // Define a constant dummy booking range
@@ -179,18 +180,19 @@ Future<Map<String, RoomBookingInfo>> loadAllBookedDates(List<HotelModel> hotels)
 bool isDateBooked(String hotelId, DateTime date) {
   final dateOnly = DateTime(date.year, date.month, date.day);
 
-  // Dummy booking: today to 2 days later for room with ID '1'
+  // Dummy booking: today to 2 days later for room with ID 'room2'
   final DateTime dummyCheckIn = DateTime.now();
   final DateTime dummyCheckOut = dummyCheckIn.add(const Duration(days: 2));
   const String dummyRoomId = 'room2';
 
-  if (hotelId == dummyRoomId &&
+  if (_showDummyBooking &&
+      hotelId == dummyRoomId &&
       (DateUtils.isSameDay(dateOnly, dummyCheckIn) ||
        (dateOnly.isAfter(dummyCheckIn) && dateOnly.isBefore(dummyCheckOut)))) {
     return true;
   }
 
-  // Original logic for actual bookings
+  // Actual booking logic
   final info = roomBookedDates[hotelId];
   return info?.dates.any((d) => DateUtils.isSameDay(d, dateOnly)) ?? false;
 }
@@ -439,12 +441,60 @@ int? _getFirstBookedDateIndex(List<DateTime> dates) {
     ],
   ),
   actions: [
-    TextButton(
-      onPressed: () => Navigator.pop(context),
-      child: const Text('Close'),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        TextButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Confirm Checkout'),
+                  content: Text('Are you sure you want to check out $guestName?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(), // Cancel
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+  onPressed: () {
+  setState(() {
+    _showDummyBooking = false; // hide dummy booking temporarily
+  });
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Successfully checked out $guestName'),
+      backgroundColor: Colors.green,
+      behavior: SnackBarBehavior.floating,
+      duration: Duration(seconds: 2),
+    ),
+  );
+
+  Navigator.of(context).pop(); // Close confirmation
+  Navigator.of(context).pop(); // Close info
+},
+
+  child: const Text('Confirm'),
+)
+
+                  ],
+                );
+              },
+            );
+          },
+          child: const Text('Checkout'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
     ),
   ],
-),
+)
+
 
           );
         },
@@ -483,7 +533,7 @@ int? _getFirstBookedDateIndex(List<DateTime> dates) {
         ),
         child: const Text(
           'Available',
-          style: TextStyle(
+          style: TextStyle( 
             color: Colors.white,
             fontSize: 12,
             fontWeight: FontWeight.bold,

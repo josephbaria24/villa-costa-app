@@ -28,6 +28,7 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   late VideoPlayerController _videoController;
 
+
   @override
   void initState() {
     super.initState();
@@ -49,12 +50,13 @@ class _IntroScreenState extends State<IntroScreen> {
 
   final List<OnboardingPage> _pages = [
     OnboardingPage(
-      title: 'Think bigger.\nGrow smarter.',
-      subtitle: 'Take your first step toward\nsmarter experiences.',
-      caption: 'Personalized comfort, curated just for you.',
-      footer: 'intro',
-      backgroundPath: 'lib/assets/images/bgintro.jpg',
-    ),
+  title: 'Stay in Style.\nRelax in Comfort.',
+  subtitle: 'Begin your journey with curated\nhotel experiences.',
+  caption: 'Where comfort meets convenience,\ndesigned just for you.',
+  footer: 'intro',
+  backgroundPath: 'lib/assets/images/bgintro.jpg',
+),
+
     OnboardingPage(
       title: 'Discover more,\nWorry less.',
       subtitle: 'Find rooms, facilities, and memories\nall in one place.',
